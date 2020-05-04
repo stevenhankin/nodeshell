@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title of the document</title>
+    <script
+      src="https://code.jquery.com/jquery-3.5.0.min.js"
+      integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      textarea {
+        width: 100%;
+        height: 600px;
+      }
+      input {
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    Shell running
+    <script>
+      function onSubmit() {
+        const command = $("#input").val();
+        const encoded = btoa(command);
+        fetch(`http://localhost:3000/api?command=${encoded}`)
+          .then((response) => response.body)
+          .then((body) => {
+            const reader = body.getReader();
+            reader.read().then(({ done, value }) => {
+              // console.log(value.toString( ))
+              const str = new TextDecoder("utf-8").decode(value);
+              console.log(str);
+              $("#output").text(str);
+            });
+          });
+      }
+      window.addEventListener("keydown", (event) => {
+        // console.log(event)
+        // $("#input").text('abc');
+        if (event.isComposing || event.keyCode === 229) {
+          return;
+        }
+        if (event.key=="Enter") {
+          console.log("RUN!")
+          onSubmit();
+        }
+        // do something
+      });
+    </script>
+      <textarea id="output">hi</textarea>
+      <input id="input" autofocus />
+  </body>
+</html>
